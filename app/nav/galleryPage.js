@@ -3,12 +3,14 @@
  */
 import React, {Component} from 'react';
 import {View, Text} from 'react-native';
+import GalleryComponent from '../containers/galleryComponent'
+
 
 export default class GalleryPage extends Component {
     render(){
         return (
             <View>
-                <Text>Gallery Page</Text>
+                <GalleryComponent />
             </View>
         )
     }

@@ -17,22 +17,22 @@ export default class CameraPage extends Component {
                     <Camera
                         ref={(cam) => {
                            this.camera = cam;
-                    }}
+                        }}
                         style={styles.preview}
                         aspect={Camera.constants.Aspect.fill}
                         type={Camera.constants.Type.back}
                         target={Camera.constants.CaptureTarget.cameraRoll}
                         orientation={Camera.constants.Orientation.auto}
                         flashMode={Camera.constants.FlashMode.auto}>
-
-
                     </Camera>
+                    <View>
+                        <TouchableHighlight style={[styles.capture, this.setBorder('red')]}
+                                            underlayColor={'#ccc'}
+                                            onPress={this.takePicture.bind(this)}>
+                            <Text>[CAPTURE]</Text>
+                        </TouchableHighlight>
+                    </View>
                 </View>
-                <TouchableHighlight style={[styles.capture, this.setBorder('red')]}
-                                    underlayColor={'#ccc'}
-                                    onPress={this.takePicture.bind(this)}>
-                    <Text>[CAPTURE]</Text>
-                </TouchableHighlight>
             </View>
         )
     }
@@ -48,26 +48,28 @@ export default class CameraPage extends Component {
         this.camera.capture()
             .then((data) => console.log(data))
             .catch(err => console.error(err));
+        console.log('ssssssssssssssssssssssssssssssss');
+        console.log();
     }
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'center'
     },
 
     preview: {
-        flex: 9,
-        justifyContent: 'flex-end',
+        flex: 1,
+        justifyContent: 'space-between',
         alignItems: 'center',
         height: Dimensions.get('window').height,
         width: Dimensions.get('window').width
     },
 
     capture: {
-        flex: 1,
+        flex: 0,
         backgroundColor: '#fff',
         borderRadius: 5,
         padding: 10,

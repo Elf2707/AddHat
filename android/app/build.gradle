@@ -123,6 +123,7 @@ dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
     compile project(':react-native-camera')
+    compile project(':rn-camera-roll')
     compile "com.facebook.react:react-native:+"  // From node_modules
 }
 
