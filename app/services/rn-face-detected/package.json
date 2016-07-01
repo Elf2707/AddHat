@@ -1,0 +1,7 @@
+{
+  "name": "rn-face-detected",
+  "nativePackage": true,
+  "optionalDependencies": {},
+  "readmeFilename": "README.md",
+  "version": "0.0.1"
+}
