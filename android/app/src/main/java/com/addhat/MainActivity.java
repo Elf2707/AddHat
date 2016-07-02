@@ -41,7 +41,7 @@ public class MainActivity extends ReactActivity {
             new MainReactPackage(),
             new RCTCameraPackage(),
             new CameraRollPackage(),
-            new FaceDetectorPackage()
+            new RnFaceDetectorPackage()
         );
     }
 }

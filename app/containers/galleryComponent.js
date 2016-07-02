@@ -5,7 +5,6 @@ import React, {Component} from 'react';
 import {NativeModules} from 'react-native';
 import CameraRoll from 'rn-camera-roll';
 import PhotosList from '../components/photosList';
-import faceDetector from '../services/rn-face-detected';
 
 const PHOTOS_COUNT_BY_FETCH = 24;
 
@@ -21,9 +20,6 @@ export default class GlaryComponent extends Component {
 
     componentWillMount(){
         this.fetchPhotos();
-        faceDetector.greeting('Elf').then(result => {
-            console.log(result);
-        });
     }
 
     getPhotosFromCameraRollData(data) {
