@@ -50,9 +50,8 @@ export default class CameraView extends Component {
             .then((data) => {
                 console.log(data);
                 FaceDetector.detectFaces(data.path).then(result => {
-                    FaceDetector.drawRectangleOnFaces();
+                    FaceDetector.addHat();
                     FaceDetector.saveResultFile().then(result => {
-                            console.log('ddddddddddddddddddddddddddddddddd');
                             console.log(result);
                     });
                 });

@@ -14,6 +14,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.provider.MediaStore.Images.Media;
 import android.net.Uri;
 
@@ -30,6 +31,9 @@ import java.io.OutputStream;
 
 public class RnFaceDetector extends ReactContextBaseJavaModule {
     final private String TAG = "ReactNativeJS";
+    final private float HAT_FACE_WIDTH_FACTOR = 1.4f;
+    final private float HAT_POS_X_FACTOR = 0.98f;
+    final private float HAT_POS_Y_FACTOR = 0.4f; //near 1/3 of hat height
 
     private ReactApplicationContext mContext;
     private SparseArray<Face> mFaces;
@@ -95,7 +99,7 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
         paint.setStrokeWidth(5);
 
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Config.RGB_565;
+        options.inPreferredConfig = Config.ARGB_8888;
         Bitmap outBitmap = mSourceImage.copy(options.inPreferredConfig, true);
 
         Canvas drawCanvas = new Canvas(outBitmap);
@@ -112,8 +116,47 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
             top = (float) ( face.getPosition().y );
             right = (float) ( face.getPosition().x + face.getWidth() );
             bottom = (float) ( face.getPosition().y + face.getHeight() );
-            Log.d(TAG, "sssssssssssssssssssssssssssssdsdsd");
             drawCanvas.drawRect( left, top, right, bottom, paint );
+        }
+
+        mSourceImage = outBitmap;
+    }
+
+    @ReactMethod
+    public void addHat(){
+        if(mFaces == null || mFaces.size() == 0){
+            String msg = mContext.getResources().getString(R.string.no_faces);
+            Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+            Log.w(TAG, msg);
+            return;
+        }
+
+        //Get hat bitmap
+        Bitmap hatBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.hat);
+        float pureHatWidth = (float) hatBitmap.getWidth();
+        float pureHatHeight = (float) hatBitmap.getHeight();
+
+        //Get source picture
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Config.ARGB_8888;
+        Bitmap outBitmap = mSourceImage.copy(options.inPreferredConfig, true);
+
+        Canvas drawCanvas = new Canvas(outBitmap);
+
+        for(int i = 0, size = mFaces.size(); i < size; i++) {
+            Face face = mFaces.valueAt(i);
+
+            //Calculate dest rectangle for face
+            float newHatWidth = face.getWidth() * HAT_FACE_WIDTH_FACTOR;
+            float scale = newHatWidth / pureHatWidth;
+            float newHatHeight = pureHatHeight * scale;
+
+            float hatLeft = face.getPosition().x - (((newHatWidth - face.getWidth()) / 2) * HAT_POS_X_FACTOR);
+            float hatTop = face.getPosition().y - (newHatHeight * HAT_POS_Y_FACTOR);
+
+            RectF destRect = new RectF(hatLeft, hatTop, hatLeft + newHatWidth, hatTop + newHatHeight);
+
+            drawCanvas.drawBitmap( hatBitmap, null, destRect, null );
         }
 
         mSourceImage = outBitmap;
@@ -136,10 +179,9 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
         public void run(){
             try {
                 OutputStream outputStream = mContext.getContentResolver()
-                            .openOutputStream(Uri.parse(mSourceFileName));
+                                .openOutputStream(Uri.parse(mSourceFileName));
                 mSourceImage.compress(CompressFormat.JPEG, 100, outputStream);
 
-                Log.d(TAG, "tratatatattatatatatatatatta");
                 outputStream.flush();
                 outputStream.close();
                 mmPromise.resolve("image saved");

@@ -6,5 +6,6 @@ const FaceDetector = NativeModules.RnFaceDetector;
 export default {
     detectFaces: (fileName) => FaceDetector.detectFaces(fileName),
     drawRectangleOnFaces: () => FaceDetector.drawRectangleOnFaces(),
-    saveResultFile: () => FaceDetector.saveResultFile()
+    saveResultFile: () => FaceDetector.saveResultFile(),
+    addHat: ()=> FaceDetector.addHat()
 };
