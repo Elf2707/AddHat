@@ -52,7 +52,8 @@ export default class CameraView extends Component {
                 FaceDetector.detectFaces(data.path).then(result => {
                     FaceDetector.addHat();
                     FaceDetector.saveResultFile().then(result => {
-                            console.log(result);
+                        console.log(result);
+                        Actions.photoPreview({uri: result});
                     });
                 });
             })

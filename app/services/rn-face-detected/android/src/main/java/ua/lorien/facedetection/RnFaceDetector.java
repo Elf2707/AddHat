@@ -184,7 +184,7 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
 
                 outputStream.flush();
                 outputStream.close();
-                mmPromise.resolve("image saved");
+                mmPromise.resolve(mSourceFileName);
             } catch (Exception e) {
                 Log.e("MyLog", e.toString());
                 mmPromise.reject("error while saving image");

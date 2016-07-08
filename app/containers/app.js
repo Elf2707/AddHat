@@ -7,6 +7,8 @@ import {Router, Scene, Reducer} from 'react-native-router-flux';
 import MainPage from './../nav/mainPage';
 import CameraPage from './../nav/cameraPage';
 import GalleryPage from './../nav/galleryPage';
+import Photo from './../components/photo';
+import PhotoPreview from './../components/photoPreview'
 
 const reducerCreate = params=> {
     const defaultReducer = Reducer(params);
@@ -23,7 +25,7 @@ const getSceneStyle = function (/* NavigationSceneRendererProps */ props, comput
         shadowColor: null,
         shadowOffset: null,
         shadowOpacity: null,
-        shadowRadius: null,
+        shadowRadius: null
     };
     if (computedProps.isActive) {
         style.marginTop = computedProps.hideNavBar ? 0 : 64;
@@ -49,6 +51,14 @@ export default class App extends Component {
                     <Scene key="gallery"
                            component={GalleryPage}
                            title="Gallery"/>
+
+                    <Scene key="photo"
+                           component={Photo}
+                           title="Photo"/>
+
+                    <Scene key="photoPreview"
+                           component={PhotoPreview}
+                           title="Preview"/>
                 </Scene>
             </Router>
         )

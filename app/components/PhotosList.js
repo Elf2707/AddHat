@@ -5,8 +5,10 @@ import React, {Component} from 'react';
 import { View,
     Text,
     Image,
-    StyleSheet
+    StyleSheet,
+    TouchableOpacity
 } from 'react-native';
+import {Actions} from 'react-native-router-flux';
 
 export default class PhotosList extends Component {
     constructor(props) {
@@ -16,11 +18,17 @@ export default class PhotosList extends Component {
     renderPhotosList(photos) {
         return photos.map((photo, i) => {
             return (
-                <Image source={{uri: photo.uri}}
-                       style={styles.photo}
-                       key={i}/>
+                <TouchableOpacity onPress={this.handlePhotoClick(photo.uri)} key={i}>
+                    <Image source={{uri: photo.uri}} style={styles.photo}/>
+                </TouchableOpacity>
             );
         })
+    }
+
+    handlePhotoClick(path){
+        return () => {
+            Actions.photo({uri: path});
+        }
     }
 
     render() {
