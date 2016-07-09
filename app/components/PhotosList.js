@@ -6,7 +6,8 @@ import { View,
     Text,
     Image,
     StyleSheet,
-    TouchableOpacity
+    TouchableOpacity,
+    ScrollView
 } from 'react-native';
 import {Actions} from 'react-native-router-flux';
 
@@ -18,16 +19,16 @@ export default class PhotosList extends Component {
     renderPhotosList(photos) {
         return photos.map((photo, i) => {
             return (
-                <TouchableOpacity onPress={this.handlePhotoClick(photo.uri)} key={i}>
+                <TouchableOpacity onPress={this.handlePhotoClick(photo)} key={i}>
                     <Image source={{uri: photo.uri}} style={styles.photo}/>
                 </TouchableOpacity>
             );
         })
     }
 
-    handlePhotoClick(path){
+    handlePhotoClick(photo) {
         return () => {
-            Actions.photo({uri: path});
+            Actions.photo({photo});
         }
     }
 
@@ -35,7 +36,7 @@ export default class PhotosList extends Component {
         return (
             <View style={styles.photosContainer}>
                 <View style={styles.textHeader}>
-                    <Text>----- Total images in gallery: {this.props.photosCount} -----</Text>
+                    <Text style={styles.text}>----- Total images in gallery: {this.props.photosCount} -----</Text>
                 </View>
                 <View style={styles.photosGrid}>
                     {this.renderPhotosList(this.props.photos)}
@@ -48,11 +49,18 @@ export default class PhotosList extends Component {
 
 const styles = StyleSheet.create({
     textHeader: {
-        alignItems: 'center'
+        alignItems: 'center',
+        marginTop: 10
+    },
+
+    text: {
+        fontSize: 20,
+        color: 'white'
     },
 
     photosContainer: {
         flexDirection: 'column',
+        backgroundColor: '#3f51b5',
     },
 
     photosGrid: {
@@ -60,11 +68,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'row',
         flexWrap: 'wrap',
+        marginTop: 10
     },
 
     photo: {
-        width: 100,
-        height: 100,
-        margin: 10
+        width: 150,
+        height: 150,
+        margin: 15
     }
 })

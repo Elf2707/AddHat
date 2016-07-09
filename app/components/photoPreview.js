@@ -5,33 +5,42 @@ import React, {Component} from 'react';
 import {Navigator,
         View,
         Text,
-        StyleSheet} from 'react-native';
+        Image,
+        StyleSheet,
+        Dimensions,
+        TouchableHighlight} from 'react-native';
 
-import ImagePreview from 'react-native-image-preview';
+import {Actions} from 'react-native-router-flux';
 
 export default class PhotoPreview extends Component {
     constructor(props){
         super(props)
-        this.state = {
-            visible: true
-        };
     }
 
     render() {
         return (
-            <ImagePreview visible={this.state.visible} close={this.handleClosePreview} />
+            <TouchableHighlight style={styles.container}
+                                onPress={this.handleClosePreview}>
+                    <Image  source={{uri: `file:${this.props.uri}`}}
+                            style={styles.image}
+                            resizeMode={'contain'}/>
+            </TouchableHighlight>
         );
     }
 
     handleClosePreview(){
-        this.setState({
-            visible: false
-        });
+        Actions.pop();
     }
 }
 
 const styles = StyleSheet.create({
-    navigator: {
+    container: {
+        flex: 1,
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height
+    },
+
+    image: {
         flex: 1
     }
 });

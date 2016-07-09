@@ -6,15 +6,18 @@ import {View,
     Text,
     StyleSheet,
     Dimensions,
-    TouchableHighlight} from 'react-native';
+    TouchableOpacity,
+    Image} from 'react-native';
+
 import Camera from 'react-native-camera';
 import FaceDetector from '../services/rn-face-detected';
+import {Actions} from 'react-native-router-flux';
 
 export default class CameraView extends Component {
     render() {
         return (
-            <View style={[styles.container, this.setBorder('red')]}>
-                <View style={[styles.preview, this.setBorder('green')]}>
+            <View style={styles.container}>
+                <View style={styles.preview}>
                     <Camera
                         ref={(cam) => {
                            this.camera = cam;
@@ -27,32 +30,22 @@ export default class CameraView extends Component {
                         flashMode={Camera.constants.FlashMode.auto}>
                     </Camera>
                     <View>
-                        <TouchableHighlight style={[styles.capture, this.setBorder('red')]}
-                                            underlayColor={'#ccc'}
-                                            onPress={this.takePicture.bind(this)}>
-                            <Text>[CAPTURE]</Text>
-                        </TouchableHighlight>
+                        <TouchableOpacity style={styles.capture}
+                                          onPress={this.takePicture.bind(this)}>
+                            <Text><Image source={require('./../assets/camera.png')}/></Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>
         )
     }
 
-    setBorder(color) {
-        return {
-            borderWidth: 4,
-            borderColor: color
-        }
-    }
-
     takePicture() {
         this.camera.capture()
             .then((data) => {
-                console.log(data);
                 FaceDetector.detectFaces(data.path).then(result => {
                     FaceDetector.addHat();
                     FaceDetector.saveResultFile().then(result => {
-                        console.log(result);
                         Actions.photoPreview({uri: result});
                     });
                 });
@@ -77,9 +70,6 @@ const styles = StyleSheet.create({
     },
 
     capture: {
-        flex: 0,
-        backgroundColor: '#fff',
-        borderRadius: 5,
         padding: 10,
         margin: 40
     }

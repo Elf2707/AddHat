@@ -3,34 +3,40 @@
  */
 import React, {Component} from 'react';
 import {View,
-        Text,
-        StyleSheet} from 'react-native';
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Image} from 'react-native';
 
 import {Actions} from 'react-native-router-flux';
-import Button from 'react-native-button';
 
 export default class MainPage extends Component {
-    render(){
+    render() {
         return (
             <View style={styles.container}>
-                <Button style={[styles.button, this.getButtonStyle(40, 'orange')]}
-                        styleDisable={{color: '#cccccc'}}
-                        onPress={Actions.camera}>Camera</Button>
-                <Button style={[styles.button, this.getButtonStyle(40, 'coral')]}
-                        styleDisable={{color: '#cccccc'}}
-                        onPress={Actions.gallery}>Gallery</Button>
+                <Image source={require('./../assets/hat-icon.png')}/>
+                <View style={styles.buttonsContainer}>
+                    <TouchableOpacity style={[styles.button, this.getRoundButtonStyle(200, '#ff4081')]}
+                                      onPress={Actions.camera}>
+                        <Text style={styles.buttonText}>Camera</Text>
+                    </TouchableOpacity>
 
-                <Button style={[styles.button, this.getButtonStyle(40, 'red')]}
-                        styleDisable={{color: '#cccccc'}}
-                        onPress={Actions.photoPreview}>Test</Button>
+                    <TouchableOpacity style={[styles.button, this.getRoundButtonStyle(200, '#ff4081')]}
+                                      onPress={Actions.gallery}>
+                        <Text style={styles.buttonText}>Gallery</Text>
+                    </TouchableOpacity>
+                </View>
+                <Image source={require('./../assets/cactus-icon.png')}/>
             </View>
         )
     }
 
-    getButtonStyle(fontSize, color) {
+    getRoundButtonStyle(radius, backgroundColor) {
         return {
-            fontSize,
-            color
+            backgroundColor,
+            borderRadius: radius,
+            height: radius,
+            width: radius
         }
     }
 }
@@ -39,10 +45,28 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
+        alignItems: 'stretch',
+        backgroundColor: '#3f51b5'
+    },
+
+    buttonsContainer: {
+        padding: 30,
+        flexDirection: 'row',
+        flex: 1,
+        justifyContent: 'space-around',
         alignItems: 'center'
     },
 
     button: {
-        marginBottom: 5
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 5,
+        borderColor: 'red'
+    },
+
+    buttonText: {
+        fontSize: 40,
+        color: 'white'
     }
 });

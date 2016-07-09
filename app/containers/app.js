@@ -21,24 +21,46 @@ const reducerCreate = params=> {
 const getSceneStyle = function (/* NavigationSceneRendererProps */ props, computedProps) {
     const style = {
         flex: 1,
-        backgroundColor: '#fff',
         shadowColor: null,
         shadowOffset: null,
         shadowOpacity: null,
-        shadowRadius: null
+        shadowRadius: null,
+        backgroundColor: '#3f51b5'
     };
+
     if (computedProps.isActive) {
-        style.marginTop = computedProps.hideNavBar ? 0 : 64;
-        style.marginBottom = computedProps.hideTabBar ? 0 : 50;
+       style.marginTop = computedProps.hideNavBar ? 0 : 90;
     }
     return style;
 };
+
+const titleStyle = {
+    fontSize: 40,
+    color: 'white',
+    marginTop: 0
+}
+
+const navBarStyle = {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#303f9f',
+    height: 90
+}
+
+const leftButtonStyle = {
+    top: 30,
+    left: 20
+}
 
 export default class App extends Component {
     render() {
         return (
             <Router createReducer={reducerCreate} getSceneStyle={getSceneStyle}>
-                <Scene key="root">
+                <Scene  key="root"
+                        hideTabBar
+                        titleStyle={titleStyle}
+                        navigationBarStyle={navBarStyle}
+                        leftButtonStyle={leftButtonStyle}>
                     <Scene key="main"
                            component={MainPage}
                            title="Add Hat"
@@ -57,6 +79,7 @@ export default class App extends Component {
                            title="Photo"/>
 
                     <Scene key="photoPreview"
+                           hideNavBar
                            component={PhotoPreview}
                            title="Preview"/>
                 </Scene>

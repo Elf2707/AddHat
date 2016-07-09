@@ -26,7 +26,7 @@ import com.google.android.gms.vision.Frame;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
-
+import android.database.Cursor;
 import java.io.OutputStream;
 
 public class RnFaceDetector extends ReactContextBaseJavaModule {
@@ -77,7 +77,7 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
             mFaces = detector.detect(frame);
 
             detector.release();
-            promise.resolve("ssssssssssssssssss---done---ssssssssssssssssssssssss" + mFaces.size());
+            promise.resolve("found faces: " + mFaces.size());
         } catch(Exception e){
             promise.reject(e);
         }
@@ -167,6 +167,31 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
         new SavePictureTask(promise);
     }
 
+    @ReactMethod
+    public void getMediaPathFromURI(String contentPath, Promise promise) {
+        String realImagePath = getRealPathFromURI(Uri.parse(contentPath));
+        if(realImagePath != null ){
+            promise.resolve(realImagePath);
+        } else {
+            promise.reject(mSourceFileName);
+        }
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+      Cursor cursor = null;
+      try {
+        String[] proj = { Media.DATA };
+        cursor = mContext.getContentResolver().query(contentUri,  proj, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+      } finally {
+        if (cursor != null) {
+          cursor.close();
+        }
+      }
+    }
+
     private class SavePictureTask implements Runnable {
         Promise mmPromise;
 
@@ -184,7 +209,8 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
 
                 outputStream.flush();
                 outputStream.close();
-                mmPromise.resolve(mSourceFileName);
+                String realImagePath = getRealPathFromURI(Uri.parse(mSourceFileName));
+                mmPromise.resolve((realImagePath != null)? realImagePath: mSourceFileName);
             } catch (Exception e) {
                 Log.e("MyLog", e.toString());
                 mmPromise.reject("error while saving image");
