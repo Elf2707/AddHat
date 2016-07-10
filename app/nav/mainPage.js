@@ -14,7 +14,8 @@ export default class MainPage extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Image source={require('./../assets/hat-icon.png')}/>
+                <Image style={styles.hatIcon}
+                       source={require('./../assets/hat-icon.png')}/>
                 <View style={styles.buttonsContainer}>
                     <TouchableOpacity style={[styles.button, this.getRoundButtonStyle(200, '#ff4081')]}
                                       onPress={Actions.camera}>
@@ -26,7 +27,8 @@ export default class MainPage extends Component {
                         <Text style={styles.buttonText}>Gallery</Text>
                     </TouchableOpacity>
                 </View>
-                <Image source={require('./../assets/cactus-icon.png')}/>
+                <Image style={styles.cactusIcon}
+                       source={require('./../assets/cactus-icon.png')}/>
             </View>
         )
     }
@@ -45,16 +47,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'stretch',
+        alignItems: 'center',
         backgroundColor: '#3f51b5'
     },
 
     buttonsContainer: {
-        padding: 30,
+        padding: 40,
         flexDirection: 'row',
         flex: 1,
         justifyContent: 'space-around',
-        alignItems: 'center'
+        alignItems: 'center',
+        alignSelf: 'stretch'
     },
 
     button: {
@@ -68,5 +71,13 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 40,
         color: 'white'
+    },
+
+    hatIcon: {
+        marginTop: 40
+    },
+
+    cactusIcon: {
+        marginBottom: 50
     }
 });

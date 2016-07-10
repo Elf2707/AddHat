@@ -6,15 +6,14 @@ import {NativeModules} from 'react-native';
 import CameraRoll from 'rn-camera-roll';
 import PhotosList from '../components/photosList';
 
-const PHOTOS_COUNT_BY_FETCH = 24;
+const PHOTOS_COUNT_BY_FETCH = 32;
 
 export default class GlaryComponent extends Component {
     constructor(props){
         super(props);
 
         this.state = {
-            photos: [],
-            photosCount: 0
+            photos: []
         }
     }
 
@@ -30,13 +29,11 @@ export default class GlaryComponent extends Component {
 
     onPhotosFetchedSuccess(data) {
         const newPhotos = this.getPhotosFromCameraRollData(data);
-        //this.images = this.images.concat(newPhotos);
 
         this.setState({
-            photos: newPhotos,
-            photosCount: newPhotos.length
+            photos: this.state.photos.concat(newPhotos)
         });
-        //if (newPhotos.length) this.lastPhotoFetched = newPhotos[newPhotos.length - 1].uri;
+        if (newPhotos.length) this.lastPhotoFetched = newPhotos[newPhotos.length - 1].uri;
     }
 
     onPhotosFetchError(err) {
@@ -52,11 +49,11 @@ export default class GlaryComponent extends Component {
     }
 
     onEndReached() {
-        //this.fetchPhotos(PHOTOS_COUNT_BY_FETCH, this.lastPhotoFetched);
+        this.fetchPhotos(PHOTOS_COUNT_BY_FETCH, this.lastPhotoFetched);
     }
 
     render(){
-        return <PhotosList photosCount={this.state.photosCount}
-                           photos={this.state.photos} />
+        return <PhotosList photos={this.state.photos}
+                           endPhotosReached={this.onEndReached.bind(this)} />
     }
 }

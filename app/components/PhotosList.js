@@ -7,23 +7,27 @@ import { View,
     Image,
     StyleSheet,
     TouchableOpacity,
-    ScrollView
+    ListView,
 } from 'react-native';
 import {Actions} from 'react-native-router-flux';
 
 export default class PhotosList extends Component {
     constructor(props) {
         super(props);
+
+        this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        this.state = {
+            dataSource: this.ds.cloneWithRows(props.photos)
+        }
+        console.log(this.state.dataSource)
     }
 
-    renderPhotosList(photos) {
-        return photos.map((photo, i) => {
-            return (
-                <TouchableOpacity onPress={this.handlePhotoClick(photo)} key={i}>
-                    <Image source={{uri: photo.uri}} style={styles.photo}/>
-                </TouchableOpacity>
-            );
-        })
+    renderPhotoCell(photo) {
+        return (
+            <TouchableOpacity onPress={this.handlePhotoClick(photo)}>
+                <Image source={{uri: photo.uri}} style={styles.photo}/>
+            </TouchableOpacity>
+        );
     }
 
     handlePhotoClick(photo) {
@@ -36,11 +40,15 @@ export default class PhotosList extends Component {
         return (
             <View style={styles.photosContainer}>
                 <View style={styles.textHeader}>
-                    <Text style={styles.text}>----- Total images in gallery: {this.props.photosCount} -----</Text>
+                    <Text style={styles.text}>----- Total images in gallery: {this.props.photos.length} -----</Text>
                 </View>
-                <View style={styles.photosGrid}>
-                    {this.renderPhotosList(this.props.photos)}
-                </View>
+                <ListView style={styles.photosGrid}
+                          dataSource={this.state.dataSource}
+                          onEndReached={this.props.endPhotosReached}
+                          onEndReachedThreshold={100}
+                          showsVerticalScrollIndicator={false}
+                          enableEmptySections={true}
+                          renderRow={this.renderPhotoCell}/>
             </View>
         );
 
@@ -59,13 +67,13 @@ const styles = StyleSheet.create({
     },
 
     photosContainer: {
+        flex: 1,
         flexDirection: 'column',
         backgroundColor: '#3f51b5',
     },
 
     photosGrid: {
         flex: 1,
-        justifyContent: 'center',
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginTop: 10
