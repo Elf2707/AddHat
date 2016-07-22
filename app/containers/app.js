@@ -8,7 +8,8 @@ import MainPage from './../nav/mainPage';
 import CameraPage from './../nav/cameraPage';
 import GalleryPage from './../nav/galleryPage';
 import Photo from './../components/photo';
-import PhotoPreview from './../components/photoPreview'
+import PhotoPreview from './../components/photoPreview';
+
 
 const reducerCreate = params=> {
     const defaultReducer = Reducer(params);
@@ -53,6 +54,10 @@ const leftButtonStyle = {
 }
 
 export default class App extends Component {
+    constructor(props){
+        super(props);
+    }
+
     render() {
         return (
             <Router createReducer={reducerCreate} getSceneStyle={getSceneStyle}>

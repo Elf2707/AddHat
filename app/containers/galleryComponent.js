@@ -33,6 +33,7 @@ export default class GlaryComponent extends Component {
         this.setState({
             photos: this.state.photos.concat(newPhotos)
         });
+
         if (newPhotos.length) this.lastPhotoFetched = newPhotos[newPhotos.length - 1].uri;
     }
 

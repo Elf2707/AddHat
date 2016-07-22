@@ -6,6 +6,8 @@
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
+    "babel-plugin-dev-expression": "^0.2.1",
+    "material-ui-native": "0.0.2",
     "react": "^15.1.0",
     "react-native": "^0.27.2",
     "react-native-camera": "git+https://github.com/lwansbrough/react-native-camera.git",

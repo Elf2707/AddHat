@@ -16,24 +16,29 @@ export default class PhotosList extends Component {
         super(props);
 
         this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
         this.state = {
             dataSource: this.ds.cloneWithRows(props.photos)
         }
-        console.log(this.state.dataSource)
+    }
+
+    componentWillReceiveProps(newProps) {
+        //Get new photo array update state
+        this.setState({
+            dataSource: this.ds.cloneWithRows(newProps.photos)
+        });
     }
 
     renderPhotoCell(photo) {
         return (
-            <TouchableOpacity onPress={this.handlePhotoClick(photo)}>
+            <TouchableOpacity onPress={this.handlePhotoClick.bind(this, photo)}>
                 <Image source={{uri: photo.uri}} style={styles.photo}/>
             </TouchableOpacity>
         );
     }
 
     handlePhotoClick(photo) {
-        return () => {
-            Actions.photo({photo});
-        }
+        Actions.photo({photo});
     }
 
     render() {
@@ -42,13 +47,14 @@ export default class PhotosList extends Component {
                 <View style={styles.textHeader}>
                     <Text style={styles.text}>----- Total images in gallery: {this.props.photos.length} -----</Text>
                 </View>
-                <ListView style={styles.photosGrid}
+                <ListView contentContainerStyle={styles.photosGrid}
                           dataSource={this.state.dataSource}
                           onEndReached={this.props.endPhotosReached}
                           onEndReachedThreshold={100}
                           showsVerticalScrollIndicator={false}
                           enableEmptySections={true}
-                          renderRow={this.renderPhotoCell}/>
+                          renderRow={this.renderPhotoCell.bind(this)}
+                          pageSize={32}/>
             </View>
         );
 
@@ -70,13 +76,14 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         backgroundColor: '#3f51b5',
+        justifyContent: 'flex-start'
     },
 
     photosGrid: {
-        flex: 1,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 10
+        marginTop: 10,
+        justifyContent: 'center',
     },
 
     photo: {
