@@ -2,6 +2,7 @@
  * Created by Elf on 11.06.2016.
  */
 import React, {Component} from 'react';
+import {Dimensions} from 'react-native';
 import {Router, Scene, Reducer} from 'react-native-router-flux';
 
 import MainPage from './../nav/mainPage';
@@ -30,26 +31,26 @@ const getSceneStyle = function (/* NavigationSceneRendererProps */ props, comput
     };
 
     if (computedProps.isActive) {
-       style.marginTop = computedProps.hideNavBar ? 0 : 90;
+       style.marginTop = computedProps.hideNavBar ? 0 : Dimensions.get('window').height * 10 / 100;
     }
     return style;
 };
 
 const titleStyle = {
-    fontSize: 40,
+    fontSize: Dimensions.get('window').width * 8 / 100,
     color: 'white',
-    marginTop: 0
+    marginTop: 5
 }
 
 const navBarStyle = {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#303f9f',
-    height: 90
+    height: Dimensions.get('window').height * 10 / 100
 }
 
 const leftButtonStyle = {
-    top: 30,
+    top: Dimensions.get('window').height * 2 / 100,
     left: 20
 }
 

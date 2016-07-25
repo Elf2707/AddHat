@@ -13,6 +13,8 @@ import Camera from 'react-native-camera';
 import FaceDetector from '../services/rn-face-detected';
 import {Actions} from 'react-native-router-flux';
 
+const CAMERA_ICON_RATIO = 1;
+
 export default class CameraView extends Component {
     render() {
         return (
@@ -32,12 +34,22 @@ export default class CameraView extends Component {
                     <View>
                         <TouchableOpacity style={styles.capture}
                                           onPress={this.takePicture.bind(this)}>
-                            <Text><Image source={require('./../assets/camera.png')}/></Text>
+                            <Text><Image style={{
+                                            width: this.getWidthByPercents(20),
+                                            height: this.getWidthByPercents(20) / CAMERA_ICON_RATIO,
+                                         }}
+                                         resizeMode = 'contain'
+                                         source={require('./../assets/camera.png')}/></Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
         )
+    }
+
+    //Object width from percents of screen width
+    getWidthByPercents(percents) {
+        return percents * Dimensions.get('window').width / 100;
     }
 
     takePicture() {
@@ -66,11 +78,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         height: Dimensions.get('window').height,
-        width: Dimensions.get('window').width
+        width: Dimensions.get('window').width,
     },
 
     capture: {
-        padding: 10,
-        margin: 40
+        padding: 10
     }
 });
