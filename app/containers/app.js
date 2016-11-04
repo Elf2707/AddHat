@@ -1,15 +1,15 @@
 /**
  * Created by Elf on 11.06.2016.
  */
-import React, {Component} from 'react';
-import {Dimensions} from 'react-native';
-import {Router, Scene, Reducer} from 'react-native-router-flux';
+import React, { Component } from 'react';
+import { Router, Scene, Reducer } from 'react-native-router-flux';
 
-import MainPage from './../nav/mainPage';
-import CameraPage from './../nav/cameraPage';
-import GalleryPage from './../nav/galleryPage';
-import Photo from './../components/photo';
-import PhotoPreview from './../components/photoPreview';
+import MainMenuView from './../components/MainMenuView';
+import Camera from './Camera';
+import Gallery from './Gallery';
+import PhotoView from './../components/PhotoView';
+import PhotoPreview from './../components/PhotoPreview';
+import DimensionUtils from './../utils/dimensionUtils';
 
 
 const reducerCreate = params=> {
@@ -31,65 +31,68 @@ const getSceneStyle = function (/* NavigationSceneRendererProps */ props, comput
     };
 
     if (computedProps.isActive) {
-       style.marginTop = computedProps.hideNavBar ? 0 : Dimensions.get('window').height * 10 / 100;
+        style.marginTop = computedProps.hideNavBar ? 0 : DimensionUtils.getHeightDimInPerc(10);
+        style.marginBottom = computedProps.hideTabBar ? 0 : DimensionUtils.getHeightDimInPerc(10);
     }
+
     return style;
 };
 
 const titleStyle = {
-    fontSize: Dimensions.get('window').width * 8 / 100,
+    fontSize: DimensionUtils.getHeightDimInPerc(8),
     color: 'white',
     marginTop: 5
-}
+};
 
 const navBarStyle = {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#303f9f',
-    height: Dimensions.get('window').height * 10 / 100
-}
+    height: DimensionUtils.getHeightDimInPerc(10),
+};
 
 const leftButtonStyle = {
-    top: Dimensions.get('window').height * 2 / 100,
-    left: 20
-}
+    top: DimensionUtils.getHeightDimInPerc(2),
+    left: DimensionUtils.getWidthDimInPerc(8),
+};
 
 export default class App extends Component {
-    constructor(props){
-        super(props);
-    }
-
     render() {
         return (
             <Router createReducer={reducerCreate} getSceneStyle={getSceneStyle}>
-                <Scene  key="root"
-                        hideTabBar
-                        titleStyle={titleStyle}
-                        navigationBarStyle={navBarStyle}
-                        leftButtonStyle={leftButtonStyle}>
+                <Scene key="root"
+                       titleStyle={titleStyle}
+                       hideTabBar
+                       hideNavBar
+                       navigationBarStyle={navBarStyle}
+                       leftButtonStyle={leftButtonStyle}>
+
                     <Scene key="main"
-                           component={MainPage}
+                           component={MainMenuView}
                            title="Add Hat"
                            initial={true}/>
 
                     <Scene key="camera"
-                           component={CameraPage}
+                           component={Camera}
                            title="Camera"/>
 
                     <Scene key="gallery"
-                           component={GalleryPage}
+                           component={Gallery}
+                           hideNavBar={false}
                            title="Gallery"/>
 
                     <Scene key="photo"
-                           component={Photo}
+                           component={PhotoView}
+                           hideNavBar={false}
                            title="Photo"/>
 
                     <Scene key="photoPreview"
                            hideNavBar
                            component={PhotoPreview}
+                           hideNavBar={false}
                            title="Preview"/>
                 </Scene>
             </Router>
-        )
+        );
     }
 }

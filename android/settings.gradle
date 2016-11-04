@@ -1,10 +1,9 @@
 rootProject.name = 'AddHat'
 
+include ':app'
+include ':rn-camera-roll'
+project(':rn-camera-roll').projectDir = new File(rootProject.projectDir, '../node_modules/rn-camera-roll/android')
 include ':react-native-camera'
 project(':react-native-camera').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-camera/android')
-include ':rn-camera-roll'
-project(':rn-camera-roll').projectDir = new File(settingsDir, '../node_modules/rn-camera-roll/android')
 include ':rn-face-detected'
 project(':rn-face-detected').projectDir = new File(rootProject.projectDir, '../app/services/rn-face-detected/android')
-
-include ':app'

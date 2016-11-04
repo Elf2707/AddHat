@@ -2,13 +2,13 @@
  * Created by Elf on 12.06.2016.
  */
 import React, {Component} from 'react';
-import {NativeModules} from 'react-native';
+import { NativeModules } from 'react-native';
 import CameraRoll from 'rn-camera-roll';
-import PhotosList from '../components/photosList';
+import PhotosList from './PhotosList';
 
 const PHOTOS_COUNT_BY_FETCH = 32;
 
-export default class GlaryComponent extends Component {
+export default class GalleryView extends Component {
     constructor(props){
         super(props);
 

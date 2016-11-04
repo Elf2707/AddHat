@@ -4,9 +4,9 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet} from 'react-native';
 
-import ZoomableImage from './zoomImage'
+import ZoomableImage from './ZoomImage'
 
-export default class Photo extends Component {
+export default class PhotoView extends Component {
     constructor(props){
         super(props);
     }

@@ -3,12 +3,12 @@
  */
 import React, {Component} from 'react';
 import {View} from 'react-native';
-import CameraView from '../containers/cameraComponent';
+import CameraView from '../components/CameraView';
 
-export default class CameraPage extends Component {
+export default class Camera extends Component {
     render() {
         return (
             <CameraView />
-        )
+        );
     }
 };
