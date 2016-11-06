@@ -7,16 +7,21 @@ import { View, Text, StyleSheet} from 'react-native';
 import ZoomableImage from './ZoomImage'
 
 export default class PhotoView extends Component {
-    constructor(props){
+    static propTypes = {
+        isPhotoProcessing: React.PropTypes.bool.isRequired,
+        photoWithHatsFileName: React.PropTypes.string.isRequired,
+    };
+
+    constructor(props) {
         super(props);
     }
 
-    render(){
+    render() {
         return (
             <ZoomableImage source={{uri: this.props.photo.uri}}
                            imageWidth={this.props.photo.width}
                            imageHeight={this.props.photo.height}
-                           style={styles.container} />
+                           style={styles.container}/>
         );
     }
 }

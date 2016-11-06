@@ -51,8 +51,7 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
 		return "RnFaceDetector";
 	}
 
-	@ReactMethod
-	public void detectFaces(String picFileName, Promise promise){
+	private void detectFaces(String picFileName){
         mSourceFileName = picFileName;
 
         try {
@@ -66,25 +65,34 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
                            .build();
 
             if (!detector.isOperational()) {
-                String msg = mContext.getResources().getString(R.string.google_vision_notready);
+                String msg = mContext.getResources().getString(R.string.face_detection_notready);
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 Log.w(TAG, msg);
-                promise.reject(msg);
-                return;
+            } else {
+            	// Detect faces
+				Frame frame = new Frame.Builder().setBitmap(mSourceImage).build();
+            	mFaces = detector.detect(frame);
             }
 
-            Frame frame = new Frame.Builder().setBitmap(mSourceImage).build();
-            mFaces = detector.detect(frame);
+        } catch(Exception e) {
+        	String msg = mContext.getResources().getString(R.string.faces_detection_error);
+            Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+            Log.w(TAG, msg);
 
-            detector.release();
-            promise.resolve("found faces: " + mFaces.size());
-        } catch(Exception e){
-            promise.reject(e);
+		} finally {
+			// Release face detector
+            if( detector != null){
+              	detector.release();
+            }
         }
 	}
 
 	@ReactMethod
-    public void drawRectangleOnFaces(){
+    public void drawRectangleOnFaces(String imageFileName, Promise promise){
+    	// Detect faces
+    	detectFaces(imageFileName);
+
+		// Draw rectangles on faces
         if(mFaces == null || mFaces.size() == 0){
             String msg = mContext.getResources().getString(R.string.no_faces);
             Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
@@ -120,10 +128,15 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
         }
 
         mSourceImage = outBitmap;
+
+        // Clear faces
+        mFaces = null;
+
+        // Save image
+        saveResultFile(imageFileName, promise);
     }
 
-    @ReactMethod
-    public void addHat(){
+    private void addHat() {
         if(mFaces == null || mFaces.size() == 0){
             String msg = mContext.getResources().getString(R.string.no_faces);
             Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
@@ -141,29 +154,36 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
         options.inPreferredConfig = Config.ARGB_8888;
         Bitmap outBitmap = mSourceImage.copy(options.inPreferredConfig, true);
 
-        Canvas drawCanvas = new Canvas(outBitmap);
+		try {
+        	Canvas drawCanvas = new Canvas(outBitmap);
 
-        for(int i = 0, size = mFaces.size(); i < size; i++) {
-            Face face = mFaces.valueAt(i);
+        	for(int i = 0, size = mFaces.size(); i < size; i++) {
+    	        Face face = mFaces.valueAt(i);
 
-            //Calculate dest rectangle for face
-            float newHatWidth = face.getWidth() * HAT_FACE_WIDTH_FACTOR;
-            float scale = newHatWidth / pureHatWidth;
-            float newHatHeight = pureHatHeight * scale;
+     	    	// Calculate destination rectangle for hat to each face
+            	float newHatWidth = face.getWidth() * HAT_FACE_WIDTH_FACTOR;
+        	    float scale = newHatWidth / pureHatWidth;
+    	        float newHatHeight = pureHatHeight * scale;
 
-            float hatLeft = face.getPosition().x - (((newHatWidth - face.getWidth()) / 2) * HAT_POS_X_FACTOR);
-            float hatTop = face.getPosition().y - (newHatHeight * HAT_POS_Y_FACTOR);
+        	    float hatLeft = face.getPosition().x - (((newHatWidth - face.getWidth()) / 2) * HAT_POS_X_FACTOR);
+    	        float hatTop = face.getPosition().y - (newHatHeight * HAT_POS_Y_FACTOR);
 
-            RectF destRect = new RectF(hatLeft, hatTop, hatLeft + newHatWidth, hatTop + newHatHeight);
+    	        RectF destRect = new RectF(hatLeft, hatTop, hatLeft + newHatWidth, hatTop + newHatHeight);
 
-            drawCanvas.drawBitmap( hatBitmap, null, destRect, null );
+    	        drawCanvas.drawBitmap( hatBitmap, null, destRect, null );
+        	}
+
+        } catch(error) {
+        	// Error drawing hat on image canvas
+        	String msg = mContext.getResources().getString(R.string.no_faces);
+        	Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+        	Log.w(TAG, msg);
         }
 
         mSourceImage = outBitmap;
     }
 
-    @ReactMethod
-    public void saveResultFile(Promise promise){
+    private void saveResultFile(Promise promise){
         new SavePictureTask(promise);
     }
 
@@ -177,19 +197,33 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
         }
     }
 
+	@ReactMethod
+	public void detectFacesAddHatsSaveToFile(String picFileName, Promise promise) {
+		detectFaces(picFileName);
+		addHat();
+
+		// Clear face array
+		mFaces = null;
+
+		saveResultFile(promise);
+
+	}
+
     private String getRealPathFromURI(Uri contentUri) {
-      Cursor cursor = null;
-      try {
-        String[] proj = { Media.DATA };
-        cursor = mContext.getContentResolver().query(contentUri,  proj, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-      } finally {
-        if (cursor != null) {
-          cursor.close();
-        }
-      }
+    	Cursor cursor = null;
+
+      	try {
+        	String[] mediaData = { Media.DATA };
+        	cursor = mContext.getContentResolver().query(contentUri,  mediaData, null, null, null);
+        	int column_index = cursor.getColumnIndexOrThrow(Media.DATA);
+        	cursor.moveToFirst();
+
+        	return cursor.getString(column_index);
+      	} finally {
+        	if (cursor != null) {
+          		cursor.close();
+      		}
+      	}
     }
 
     private class SavePictureTask implements Runnable {
@@ -201,7 +235,7 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
         }
 
         @Override
-        public void run(){
+        public void run() {
             try {
                 OutputStream outputStream = mContext.getContentResolver()
                                 .openOutputStream(Uri.parse(mSourceFileName));
@@ -209,11 +243,18 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
 
                 outputStream.flush();
                 outputStream.close();
+
                 String realImagePath = getRealPathFromURI(Uri.parse(mSourceFileName));
                 mmPromise.resolve((realImagePath != null)? realImagePath: mSourceFileName);
+
             } catch (Exception e) {
                 Log.e("MyLog", e.toString());
-                mmPromise.reject("error while saving image");
+                mmPromise.reject("Error");
+
+            } finally {
+            	// Delete image file buffers
+                mSourceImage = null;
+                mSourceFileName = null;
             }
         }
     }

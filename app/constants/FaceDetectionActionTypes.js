@@ -1,0 +1,6 @@
+/**
+ * Created by Elf on 06.11.2016.
+ */
+export const START_ADDING_HATS = 'START_ADDING_HATS';
+export const ADDING_HATS_ERROR = 'ADDING_HATS_ERROR';
+export const ADDING_HATS_SUCCESS = 'ADDING_HATS_SUCCESS';

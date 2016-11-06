@@ -1,8 +1,8 @@
 /**
  * Created by Elf on 06.06.2016.
  */
-import previewReducer from './previewReducer';
+import faceDetector from './faceDetector';
 
-export {
-    previewReducer
+export default {
+    faceDetector,
 };

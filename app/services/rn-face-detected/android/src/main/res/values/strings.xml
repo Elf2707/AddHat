@@ -1,4 +1,5 @@
 <resources>
-    <string name="google_vision_notready">Face detector dependencies are not yet available. Check out your google services installation</string>
+    <string name="face_detection_notready">Face detector dependencies are not yet available. Check out your google services installation</string>
+    <string name="faces_detection_error">Error while detecting faces</string>
     <string name="no_faces">There were no faces on picture</string>
 </resources>

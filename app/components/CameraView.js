@@ -10,6 +10,10 @@ import FaceDetector from './../services/rn-face-detected';
 import DimensionUtils from './../utils/dimensionUtils';
 
 export default class CameraView extends Component {
+    static propTypes = {
+        onTakeSnapShot: React.PropTypes.func.isRequired
+    };
+
     render() {
         return (
             <View style={styles.container}>
@@ -46,7 +50,7 @@ export default class CameraView extends Component {
                             onPress={this.takePicture.bind(this)}
                             underlayColor={'rgba(255, 255, 255, 0.4)'}>
 
-                            <Image style={styles.buttonIcon}
+                            <Image style={styles.snapShotButtonIcon}
                                    resizeMode={'contain'}
                                    source={require('AddHat/app/assets/ic_camera.png')}/>
                         </TouchableHighlight>
@@ -70,14 +74,10 @@ export default class CameraView extends Component {
     }
 
     takePicture() {
+        // Take snapshot
         this.camera.capture()
             .then((data) => {
-                FaceDetector.detectFaces(data.path).then(result => {
-                    FaceDetector.addHat();
-                    FaceDetector.saveResultFile().then(result => {
-                        Actions.photoPreview({uri: result});
-                    });
-                });
+                this.props.onTakeSnapShot(data.path)
             })
             .catch(err => console.error(err));
     }
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
 
     controlPanel: {
         position: 'absolute',
-        width: DimensionUtils.getWidthDimInPerc(90),
+        width: DimensionUtils.getWidthDimInPerc(95),
         top: DimensionUtils.getHeightDimInPerc(85),
         left: DimensionUtils.getWidthDimInPerc(5),
         borderRadius: DimensionUtils.getHeightDimInPerc(2),
@@ -112,6 +112,11 @@ const styles = StyleSheet.create({
     },
 
     buttonIcon: {
+        height: DimensionUtils.getHeightDimInPerc(8),
+        width: DimensionUtils.getHeightDimInPerc(7),
+    },
+
+    snapShotButtonIcon: {
         height: DimensionUtils.getHeightDimInPerc(9),
         width: DimensionUtils.getHeightDimInPerc(9),
     },
@@ -122,7 +127,7 @@ const styles = StyleSheet.create({
     },
 
     leftMarginMinus: {
-        marginLeft: -DimensionUtils.getHeightDimInPerc(2.2)
+        marginLeft: -DimensionUtils.getHeightDimInPerc(2.1)
     },
 
     rightMarginMinus: {

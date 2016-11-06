@@ -1,11 +1,9 @@
 import React from 'react';
-import {NativeModules} from 'react-native';
+import { NativeModules } from 'react-native';
 
 const FaceDetector = NativeModules.RnFaceDetector;
 
 export default {
-    detectFaces: (fileName) => FaceDetector.detectFaces(fileName),
-    drawRectangleOnFaces: () => FaceDetector.drawRectangleOnFaces(),
-    saveResultFile: () => FaceDetector.saveResultFile(),
-    addHat: ()=> FaceDetector.addHat()
+    addHatsWithSaveToFile: (fileName) => FaceDetector.addHatsWithSaveToFile(fileName),
+    drawRectangleOnFaces: (fileName) => FaceDetector.drawRectangleOnFaces(fileName),
 };
