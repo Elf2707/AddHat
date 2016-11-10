@@ -1,60 +1,109 @@
 /**
  * Created by Elf on 12.06.2016.
  */
-import React, {Component} from 'react';
-import { NativeModules } from 'react-native';
-import CameraRoll from 'rn-camera-roll';
-import PhotosList from './PhotosList';
+import React, { Component } from 'react';
+import { View, Text, StyleSheet, TouchableHighlight, ListView } from 'react-native';
+import { Actions } from 'react-native-router-flux';
 
-const PHOTOS_COUNT_BY_FETCH = 32;
+import NavBar from './NavBar';
 
 export default class GalleryView extends Component {
-    constructor(props){
+    static propsConfig = {
+        photos: React.PropTypes.array.isRequired,
+        endPhotosReached: React.PropTypes.func.isRequired,
+    };
+
+    constructor(props) {
         super(props);
 
+        this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.state = {
-            photos: []
+            dataSource: this.ds.cloneWithRows(props.photos)
         }
     }
 
-    componentWillMount(){
-        this.fetchPhotos();
+    render() {
+        return (
+            <View style={styles.container}>
+                <NavBar
+                    style={styles.navBar}
+                    title={'Gallery'}/>
+
+                <View style={styles.photosListContainer}>
+                    <View style={styles.textHeader}>
+                        <Text style={styles.text}>----- Total images in gallery: {this.props.photos.length} -----</Text>
+                    </View>
+
+                    <ListView contentContainerStyle={styles.photosGrid}
+                              dataSource={this.state.dataSource}
+                              onEndReached={this.props.endPhotosReached}
+                              onEndReachedThreshold={100}
+                              showsVerticalScrollIndicator={false}
+                              enableEmptySections={true}
+                              renderRow={this.renderPhotoCell.bind(this)}
+                              pageSize={32}/>
+                </View>
+            </View>
+        );
     }
 
-    getPhotosFromCameraRollData(data) {
-        return data.edges.map((asset) => {
-            return asset.node.image;
-        });
+    renderPhotoCell(photo, sectionId, rowId) {
+        return (
+            <TouchableHighlight onPress={this._handlePhotoClick.bind(this, photo)}>
+                <Image source={{uri: photo.uri}} style={styles.photo}/>
+            </TouchableHighlight>
+        );
     }
 
-    onPhotosFetchedSuccess(data) {
-        const newPhotos = this.getPhotosFromCameraRollData(data);
-
+    componentWillReceiveProps(newProps) {
+        //Get new photo array update state
         this.setState({
-            photos: this.state.photos.concat(newPhotos)
+            dataSource: this.ds.cloneWithRows(newProps.photos)
         });
-
-        if (newPhotos.length) this.lastPhotoFetched = newPhotos[newPhotos.length - 1].uri;
     }
 
-    onPhotosFetchError(err) {
-        // Handle error here
-        console.log(err);
-    }
-
-    fetchPhotos(count = PHOTOS_COUNT_BY_FETCH, after) {
-        CameraRoll.getPhotos({
-            first: count,
-            after,
-        }, this.onPhotosFetchedSuccess.bind(this), this.onPhotosFetchError.bind(this));
-    }
-
-    onEndReached() {
-        this.fetchPhotos(PHOTOS_COUNT_BY_FETCH, this.lastPhotoFetched);
-    }
-
-    render(){
-        return <PhotosList photos={this.state.photos}
-                           endPhotosReached={this.onEndReached.bind(this)} />
+    _handlePhotoClick(photo) {
+        Actions.photo({photo});
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+
+    navBar: {
+        borderBottomWidth: 2,
+        borderBottomColor: '#FF4081',
+    },
+
+    textHeader: {
+        alignItems: 'center',
+        marginTop: 10
+    },
+
+    text: {
+        fontSize: 20,
+        color: 'white'
+    },
+
+    photosListContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        backgroundColor: '#3f51b5',
+        justifyContent: 'flex-start'
+    },
+
+    photosGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 10,
+        justifyContent: 'center',
+    },
+
+    photo: {
+        width: 150,
+        height: 150,
+        margin: 15
+    },
+});

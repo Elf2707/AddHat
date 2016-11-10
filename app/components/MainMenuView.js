@@ -12,7 +12,7 @@ export default class MainMenuView extends Component {
         return (
             <View style={styles.container}>
                 <Image style={styles.hatIcon}
-                       source={require('AddHat/app/assets/hat-icon.png')}
+                       source={require('AddHat/app/assets/icons/hat-icon.png')}
                        resizeMode={'contain'}/>
 
                 <View style={styles.buttonsContainer}>
@@ -35,7 +35,7 @@ export default class MainMenuView extends Component {
                 </View>
 
                 <Image style={styles.cactusIcon}
-                       source={require('AddHat/app/assets/cactus-icon.png')}
+                       source={require('AddHat/app/assets/icons/cactus-icon.png')}
                        resizeMode={'contain'}/>
             </View>
         )

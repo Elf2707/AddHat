@@ -1,0 +1,6 @@
+/**
+ * Created by Elf on 06.11.2016.
+ */
+export const TRY_FETCH_PHOTOS = 'TRY_FETCH_PHOTOS';
+export const PHOTOS_FETCHED_SUCCESS = 'PHOTOS_FETCHED_SUCCESS';
+export const PHOTOS_FETCHED_ERROR = 'PHOTOS_FETCHED_ERROR';

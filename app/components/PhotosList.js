@@ -91,4 +91,4 @@ const styles = StyleSheet.create({
         height: 150,
         margin: 15
     }
-})
+});

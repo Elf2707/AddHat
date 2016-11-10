@@ -14,7 +14,7 @@ import DimensionUtils from './../utils/dimensionUtils';
 
 const reducerCreate = params=> {
     const defaultReducer = Reducer(params);
-    return (state, action)=> {
+    return (state, action) => {
         return defaultReducer(state, action);
     }
 };
@@ -60,37 +60,33 @@ export default class App extends Component {
     render() {
         return (
             <Router createReducer={reducerCreate} getSceneStyle={getSceneStyle}>
-                <Scene key="root"
+                <Scene key='root'
                        titleStyle={titleStyle}
                        hideTabBar
                        hideNavBar
                        navigationBarStyle={navBarStyle}
                        leftButtonStyle={leftButtonStyle}>
 
-                    <Scene key="main"
+                    <Scene key='main'
                            component={MainMenuView}
-                           title="Add Hat"
+                           title='Add Hat'
                            initial={true}/>
 
-                    <Scene key="camera"
+                    <Scene key='camera'
                            component={Camera}
-                           title="Camera"/>
+                           title='Camera'/>
 
-                    <Scene key="gallery"
+                    <Scene key='gallery'
                            component={Gallery}
-                           hideNavBar={false}
-                           title="Gallery"/>
+                           title='Gallery'/>
 
-                    <Scene key="photo"
+                    <Scene key='photo'
                            component={PhotoView}
-                           hideNavBar={false}
-                           title="Photo"/>
+                           title='Photo'/>
 
-                    <Scene key="photoPreview"
-                           hideNavBar
+                    <Scene key='photoPreview'
                            component={PhotoPreview}
-                           hideNavBar={false}
-                           title="Preview"/>
+                           title='Preview'/>
                 </Scene>
             </Router>
         );

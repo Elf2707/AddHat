@@ -53,11 +53,12 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
 
 	private void detectFaces(String picFileName){
         mSourceFileName = picFileName;
+		FaceDetector detector = null;
 
         try {
             mSourceImage = Media.getBitmap(mContext.getContentResolver(), Uri.parse(mSourceFileName));
 
-            FaceDetector detector = new FaceDetector.Builder(mContext)
+            detector = new FaceDetector.Builder(mContext)
                            .setMode(FaceDetector.ACCURATE_MODE)
                            .setTrackingEnabled(false)
                            .setLandmarkType(FaceDetector.ALL_LANDMARKS)
@@ -133,7 +134,7 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
         mFaces = null;
 
         // Save image
-        saveResultFile(imageFileName, promise);
+        saveResultFile(promise);
     }
 
     private void addHat() {
@@ -173,7 +174,7 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
     	        drawCanvas.drawBitmap( hatBitmap, null, destRect, null );
         	}
 
-        } catch(error) {
+        } catch(Exception e) {
         	// Error drawing hat on image canvas
         	String msg = mContext.getResources().getString(R.string.no_faces);
         	Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();

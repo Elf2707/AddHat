@@ -10,7 +10,7 @@ import { applyMiddleware, createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import thunk from 'redux-thunk';
 
-import * as rootReducer from './app/reducers/index'
+import rootReducer from './app/reducers/index'
 import App from './app/containers/app';
 
 const store = createStore(combineReducers(rootReducer), applyMiddleware(thunk));
