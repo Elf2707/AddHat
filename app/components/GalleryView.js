@@ -2,15 +2,16 @@
  * Created by Elf on 12.06.2016.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableHighlight, ListView } from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight, ListView, Image } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 
 import NavBar from './NavBar';
+import DimensionUtils from './../utils/dimensionUtils';
 
 export default class GalleryView extends Component {
-    static propsConfig = {
+    static propTypes = {
         photos: React.PropTypes.array.isRequired,
-        endPhotosReached: React.PropTypes.func.isRequired,
+        onEndPhotosReached: React.PropTypes.func.isRequired,
     };
 
     constructor(props) {
@@ -29,29 +30,46 @@ export default class GalleryView extends Component {
                     style={styles.navBar}
                     title={'Gallery'}/>
 
-                <View style={styles.photosListContainer}>
-                    <View style={styles.textHeader}>
-                        <Text style={styles.text}>----- Total images in gallery: {this.props.photos.length} -----</Text>
-                    </View>
-
-                    <ListView contentContainerStyle={styles.photosGrid}
-                              dataSource={this.state.dataSource}
-                              onEndReached={this.props.endPhotosReached}
-                              onEndReachedThreshold={100}
-                              showsVerticalScrollIndicator={false}
-                              enableEmptySections={true}
-                              renderRow={this.renderPhotoCell.bind(this)}
-                              pageSize={32}/>
-                </View>
+                <ListView contentContainerStyle={styles.photosGrid}
+                          dataSource={this.state.dataSource}
+                          onEndReached={this.props.endPhotosReached}
+                          onEndReachedThreshold={100}
+                          showsVerticalScrollIndicator={false}
+                          enableEmptySections={true}
+                          renderRow={this.renderPhotoCell.bind(this)}
+                          renderSeparator={this.renderSeparator.bind(this)}
+                          renderFooter={this.renderFooter.bind(this)}
+                          render
+                          pageSize={32}/>
             </View>
         );
     }
 
     renderPhotoCell(photo, sectionId, rowId) {
         return (
-            <TouchableHighlight onPress={this._handlePhotoClick.bind(this, photo)}>
+            <TouchableHighlight
+                style={styles.photoButton}
+                onPress={this._handlePhotoClick.bind(this, photo)}>
                 <Image source={{uri: photo.uri}} style={styles.photo}/>
             </TouchableHighlight>
+        );
+    }
+
+    renderFooter() {
+        //return (
+        //    <View style={styles.transactionsFooter}>
+        //        <ActivityIndicator
+        //            animating={true}
+        //            color={'#000'}
+        //            size="large"/>
+        //    </View>
+        //);
+    }
+
+    renderSeparator(sectionID, rowID) {
+        return (
+            <View key={rowID}
+                  style={styles.separator}/>
         );
     }
 
@@ -77,33 +95,32 @@ const styles = StyleSheet.create({
         borderBottomColor: '#FF4081',
     },
 
-    textHeader: {
-        alignItems: 'center',
-        marginTop: 10
-    },
-
-    text: {
-        fontSize: 20,
-        color: 'white'
-    },
-
-    photosListContainer: {
-        flex: 1,
-        flexDirection: 'column',
-        backgroundColor: '#3f51b5',
-        justifyContent: 'flex-start'
-    },
-
     photosGrid: {
+        width: DimensionUtils.getWidthDimInPerc(100),
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 10,
         justifyContent: 'center',
+        padding: 10,
+    },
+
+    photoButton: {
+        width: DimensionUtils.getHeightDimInPerc(14),
+        height: DimensionUtils.getHeightDimInPerc(14),
     },
 
     photo: {
-        width: 150,
-        height: 150,
-        margin: 15
+        width: DimensionUtils.getHeightDimInPerc(14),
+        height: DimensionUtils.getHeightDimInPerc(14),
+    },
+
+    separator: {
+        width: DimensionUtils.getHeightDimInPerc(1.5),
+        height: DimensionUtils.getHeightDimInPerc(15.5),
+    },
+
+    transactionsFooter: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 5,
     },
 });

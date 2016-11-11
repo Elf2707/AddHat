@@ -4,7 +4,7 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet} from 'react-native';
 
-import ZoomableImage from './ZoomImage'
+import ZoomableImage from './ZoomableImage'
 
 export default class PhotoView extends Component {
     static propTypes = {

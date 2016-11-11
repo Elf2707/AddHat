@@ -17,7 +17,7 @@ class Gallery extends Component {
     }
 
     componentWillMount(){
-        //this.fetchPhotos();
+        this.props.fetchPhotos();
     }
 
     _handleOnPhotosEndReached() {
