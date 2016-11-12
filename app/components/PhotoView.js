@@ -1,15 +1,14 @@
 /**
  * Created by Elf on 08.07.2016.
  */
-import React, {Component} from 'react';
-import { View, Text, StyleSheet} from 'react-native';
+import React, { Component } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
 import ZoomableImage from './ZoomableImage'
 
 export default class PhotoView extends Component {
     static propTypes = {
         isPhotoProcessing: React.PropTypes.bool.isRequired,
-        photoWithHatsFileName: React.PropTypes.string.isRequired,
     };
 
     constructor(props) {
@@ -18,10 +17,9 @@ export default class PhotoView extends Component {
 
     render() {
         return (
-            <ZoomableImage source={{uri: this.props.photo.uri}}
-                           imageWidth={this.props.photo.width}
-                           imageHeight={this.props.photo.height}
-                           style={styles.container}/>
+            <ZoomableImage
+                style={styles.container}
+                image={this.props.photo}/>
         );
     }
 }

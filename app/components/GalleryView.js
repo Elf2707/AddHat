@@ -81,7 +81,7 @@ export default class GalleryView extends Component {
     }
 
     _handlePhotoClick(photo) {
-        Actions.photo({photo});
+        Actions.photoPreview({photo});
     }
 }
 

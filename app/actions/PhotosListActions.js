@@ -10,7 +10,6 @@ export function fetchPhotos(lastFetchedPhoto) {
     return (dispatch) => {
         onPhotosFetchedSuccess = (data) => {
             const newPhotos = data.edges.map((asset) => {
-                console.log(asset);
                 return asset.node.image;
             });
 

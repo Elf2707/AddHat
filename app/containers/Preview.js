@@ -3,16 +3,16 @@
  */
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
-import connect from 'react-redux';
+import { connect } from 'react-redux';
 
-import PhotoView from './../components/PhotoView';
+import ZoomableImage from './../components/ZoomableImage';
 
 class Preview extends Component {
     render() {
         return (
-            <PhotoView
+            <ZoomableImage
                 isPhotoProcessing={this.props.isPhotoProcessing}
-                photoWithHatsFileName={this.props.photoWithHatsFileName}/>
+                image={this.props.photo}/>
         );
     }
 }

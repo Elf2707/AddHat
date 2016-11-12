@@ -7,8 +7,7 @@ import { Router, Scene, Reducer } from 'react-native-router-flux';
 import MainMenuView from './../components/MainMenuView';
 import Camera from './Camera';
 import Gallery from './Gallery';
-import PhotoView from './../components/PhotoView';
-import PhotoPreview from './../components/PhotoPreview';
+import Preview from './Preview';
 import DimensionUtils from './../utils/dimensionUtils';
 
 
@@ -80,12 +79,8 @@ export default class App extends Component {
                            component={Gallery}
                            title='Gallery'/>
 
-                    <Scene key='photo'
-                           component={PhotoView}
-                           title='Photo'/>
-
                     <Scene key='photoPreview'
-                           component={PhotoPreview}
+                           component={Preview}
                            title='Preview'/>
                 </Scene>
             </Router>
