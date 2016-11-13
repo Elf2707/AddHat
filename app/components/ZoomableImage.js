@@ -57,10 +57,13 @@ export default class ZoomableImage extends Component {
         this._onLayout = this._onLayout.bind(this);
 
         this.state = {
-            height: DimensionUtils.getHeightDimInPerc(100),
-            width: DimensionUtils.getWidthDimInPerc(100),
+            screenHeight: DimensionUtils.getHeightDimInPerc(100),
+            screenWidth: DimensionUtils.getWidthDimInPerc(100),
+            isLayoutInit: false,
             isZooming: false,
             isMoving: false,
+            offsetX: 0,
+            position: new Animated.ValueXY(),
             minZoom: 0,
             maxZoom: 1,
             zoom: new Animated.Value(0),
@@ -68,26 +71,19 @@ export default class ZoomableImage extends Component {
     }
 
     render() {
-        console.log(this.props.image.height);
         return (
             <View style={[styles.container, this.props.style]}
-                {...this._panResponder.panHandlers}
                   onLayout={this._onLayout}>
-
                 <Animated.Image
                     source={{uri: this.props.image.uri}}
-                    style={{
+                    style={[{
                         height: this.props.image.height,
                         width: this.props.image.width,
-                        borderColor: 'cyan',
-                        borderWidth: 2,
-                        transform: [{
+                        transform: this.state.position.getTranslateTransform().concat({
                             scale: this.state.zoom,
-                        },
-                        {
-                            translateY: 0,
-                        }],
-                    }}/>
+                        }),
+                    }]}
+                    {...this._panResponder.panHandlers}/>
             </View>
         );
     }
@@ -112,6 +108,11 @@ export default class ZoomableImage extends Component {
     }
 
     _handlePanResponderGrant(e, gestureState) {
+        const currX = this.state.position.x._value;
+        const currY = this.state.position.y._value;
+
+        this.state.position.setOffset({x: currX, y: currY});
+        this.state.position.setValue({x: 0, y: 0});
     }
 
     _handlePanResponderMove(e, gestureState) {
@@ -123,28 +124,52 @@ export default class ZoomableImage extends Component {
                 touches[1].pageX, touches[1].pageY);
         } else if (touches.length == 1) {
             // Moving
-            this.processTouch(touches[0].pageX, touches[0].pageY)
+            this.processMove(e, gestureState);
         }
     }
 
     _handlePanResponderRelease(e, gestureState) {
         // Detect taps double and one tap
         this.detectTaps(gestureState);
+        this.state.position.flattenOffset();
 
-        this.setState({});
+        // Test if it goes out the boards return it back
+        const currX = this.state.position.x._value;
+        const currY = this.state.position.y._value;
+
+        if( currX + this.state.offsetX > 0) {
+            Animated.spring(this.state.position, {
+                toValue: {x:0, y: currY}
+            }).start();
+        }
+
+        if( currY > 0) {
+            Animated.spring(this.state.position, {
+                toValue: {x: currX, y: 0}
+            }).start();
+        }
     }
 
     _onLayout() {
-        let zoom = this.state.height / this.props.image.height;
-        this.state.zoom.setValue(zoom);
+        if (!this.state.isLayoutInit) {
+            // Calc zoom for height match to screen height
+            let zoom = this.state.screenHeight / this.props.image.height;
+            this.state.zoom.setValue(zoom);
 
-        // Detect max zoom if picture less when screen zoom > 1 set maxZoom = zoom * 2
-        let maxZoom = zoom < 1 ? 1 : zoom + 2;
+            // Calc width and set initial position x, y
+            const offsetX = (this.state.screenWidth - this.props.image.width * zoom) / 2;
+            // this.state.position.setOffset(offsetX, 0);
 
-        this.setState({
-            maxZoom,
-            minZoom: zoom,
-        });
+            // Detect max zoom if picture less when screen zoom > 1 set maxZoom = zoom * 2
+            let maxZoom = zoom < 1 ? 1 : zoom + 2;
+
+            this.setState({
+                maxZoom,
+                minZoom: zoom,
+                offsetX,
+                isLayoutInit: true,
+            });
+        }
     }
 
     detectTaps({dx, dy}) {
@@ -213,11 +238,16 @@ export default class ZoomableImage extends Component {
         console.log('double tap tap tap tap tap tap tap tap tap tap tap tap tap tap ');
     }
 
-    processTouch(x, y) {
-        console.log('Moving Moving Moving Moving Moving Moving Moving Moving Moving Moving ');
-        if (!this.state.isMoving) {
-        } else {
-        }
+    processMove(e, gestureState) {
+        // Move image
+        Animated.event([gestureState, {
+            dx: this.state.position.x,
+            dy: this.state.position.y
+        }])(e, gestureState);
+
+        this.setState({
+            offsetX: this.state.offsetX + gestureState.dx,
+        });
     }
 }
 
@@ -227,7 +257,5 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.2)',
         justifyContent: 'center',
         alignItems: 'center',
-        borderColor: 'red',
-        borderWidth: 2,
     },
 });
