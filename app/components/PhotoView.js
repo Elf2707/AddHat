@@ -18,7 +18,6 @@ export default class PhotoView extends Component {
     render() {
         return (
             <ZoomableImage
-                style={styles.container}
                 image={this.props.photo}/>
         );
     }

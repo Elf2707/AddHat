@@ -62,6 +62,7 @@ export default class ZoomableImage extends Component {
             isLayoutInit: false,
             isZooming: false,
             isMoving: false,
+            initialDistance: 0,
             offsetX: 0,
             position: new Animated.ValueXY(),
             minZoom: 0,
@@ -77,6 +78,8 @@ export default class ZoomableImage extends Component {
                 <Animated.Image
                     source={{uri: this.props.image.uri}}
                     style={[{
+                        borderColor: 'red',
+                        borderWidth: 2,
                         height: this.props.image.height,
                         width: this.props.image.width,
                         transform: this.state.position.getTranslateTransform().concat({
@@ -95,21 +98,23 @@ export default class ZoomableImage extends Component {
             onMoveShouldSetPanResponder: (evt, gestureState) => true,
             onMoveShouldSetResponderCapture: (evt, gestureState) => true,
             onPanResponderTerminationRequest: (evt, gestureState) => true,
-            onPanResponderTerminate: (evt, gestureState) => {
-            },
+            onPanResponderTerminate: this._handlePanResponderReleaseOrTermination.bind(this),
+
             onShouldBlockNativeResponder: (evt, gestureState) => true,
 
             onPanResponderGrant: this._handlePanResponderGrant.bind(this),
 
             onPanResponderMove: this._handlePanResponderMove.bind(this),
 
-            onPanResponderRelease: this._handlePanResponderRelease.bind(this),
+            onPanResponderRelease: this._handlePanResponderReleaseOrTermination.bind(this),
         });
     }
 
     _handlePanResponderGrant(e, gestureState) {
         const currX = this.state.position.x._value;
         const currY = this.state.position.y._value;
+        console.log('offsetX: ' + currX);
+        console.log('offsetY: ' + currY);
 
         this.state.position.setOffset({x: currX, y: currY});
         this.state.position.setValue({x: 0, y: 0});
@@ -128,26 +133,12 @@ export default class ZoomableImage extends Component {
         }
     }
 
-    _handlePanResponderRelease(e, gestureState) {
+    _handlePanResponderReleaseOrTermination(e, gestureState) {
         // Detect taps double and one tap
         this.detectTaps(gestureState);
         this.state.position.flattenOffset();
 
-        // Test if it goes out the boards return it back
-        const currX = this.state.position.x._value;
-        const currY = this.state.position.y._value;
-
-        if( currX + this.state.offsetX > 0) {
-            Animated.spring(this.state.position, {
-                toValue: {x:0, y: currY}
-            }).start();
-        }
-
-        if( currY > 0) {
-            Animated.spring(this.state.position, {
-                toValue: {x: currX, y: 0}
-            }).start();
-        }
+        this.controlBoardsAfterMoving();
     }
 
     _onLayout() {
@@ -156,9 +147,7 @@ export default class ZoomableImage extends Component {
             let zoom = this.state.screenHeight / this.props.image.height;
             this.state.zoom.setValue(zoom);
 
-            // Calc width and set initial position x, y
             const offsetX = (this.state.screenWidth - this.props.image.width * zoom) / 2;
-            // this.state.position.setOffset(offsetX, 0);
 
             // Detect max zoom if picture less when screen zoom > 1 set maxZoom = zoom * 2
             let maxZoom = zoom < 1 ? 1 : zoom + 2;
@@ -170,6 +159,58 @@ export default class ZoomableImage extends Component {
                 isLayoutInit: true,
             });
         }
+    }
+
+    controlBoardsAfterMoving() {
+        // Test if it goes out the boards return it back
+        const currX = this.state.position.x._value;
+        const currY = this.state.position.y._value;
+        console.log('x: ' + currX);
+        console.log('y: ' + currY);
+        console.log('offset: ' + this.state.offsetX);
+
+        // 4 edges 4 directions
+        //if (currX > Math.abs(this.state.offsetX) && currY > 0) {
+        //    Animated.spring(this.state.position, {
+        //        toValue: {x: -this.state.offsetX, y: 0}
+        //    }).start();
+        //
+        //} else if (currX > Math.abs(this.state.offsetX) && currY < 0) {
+        //    Animated.spring(this.state.position, {
+        //        toValue: {x: -this.state.offsetX, y: 0}
+        //    }).start();
+        //
+        //} else if (currX < this.state.offsetX && currY < 0) {
+        //    Animated.spring(this.state.position, {
+        //        toValue: {x: this.state.offsetX, y: 0}
+        //    }).start();
+        //
+        //} else if (currX < this.state.offsetX && currY > 0) {
+        //    Animated.spring(this.state.position, {
+        //        toValue: {x: this.state.offsetX, y: 0}
+        //    }).start();
+        //
+        //} else if (currY > 0) {
+        //    Animated.spring(this.state.position, {
+        //        toValue: {x: currX, y: 0}
+        //    }).start();
+        //
+        //} else if (currX > Math.abs(this.state.offsetX)) {
+        //    Animated.spring(this.state.position, {
+        //        toValue: {x: -this.state.offsetX, y: currY}
+        //    }).start();
+        //
+        //} else if (currY < 0) {
+        //    Animated.spring(this.state.position, {
+        //        toValue: {x: currX, y: 0}
+        //    }).start();
+        //
+        //} else if (currX < this.state.offsetX) {
+        //    Animated.spring(this.state.position, {
+        //        toValue: {x: this.state.offsetX, y: currY}
+        //    }).start();
+        //}
+
     }
 
     detectTaps({dx, dy}) {
@@ -197,40 +238,24 @@ export default class ZoomableImage extends Component {
 
     processPinch(x1, y1, x2, y2) {
         const distance = calcDistance(x1, y1, x2, y2);
-        const center = calcCenter(x1, y1, x2, y2);
 
         if (!this.state.isZooming) {
-            let offsetByZoom = calcOffsetByZoom(this.state.width, this.state.height,
-                this.props.imageWidth, this.props.imageHeight, this.state.zoom);
             this.setState({
                 isZooming: true,
                 initialDistance: distance,
-                initialX: center.x,
-                initialY: center.y,
-                initialTop: this.state.top,
-                initialLeft: this.state.left,
-                initialZoom: this.state.zoom,
-                initialTopWithoutZoom: this.state.top - offsetByZoom.top,
-                initialLeftWithoutZoom: this.state.left - offsetByZoom.left,
             });
 
         } else {
             let touchZoom = distance / this.state.initialDistance;
-            let zoom = touchZoom * this.state.initialZoom > this.state.minZoom
-                ? touchZoom * this.state.initialZoom : this.state.minZoom;
-
-            let offsetByZoom = calcOffsetByZoom(this.state.width, this.state.height,
-                this.props.imageWidth, this.props.imageHeight, zoom);
-            let left = (this.state.initialLeftWithoutZoom * touchZoom) + offsetByZoom.left;
-            let top = (this.state.initialTopWithoutZoom * touchZoom) + offsetByZoom.top;
-
-            this.setState({
-                zoom: zoom,
-                left: 0,
-                top: 0,
-                left: left > 0 ? 0 : maxOffset(left, this.state.width, this.props.imageWidth * zoom),
-                top: top > 0 ? 0 : maxOffset(top, this.state.height, this.props.imageHeight * zoom),
-            });
+            let zoom = touchZoom * this.state.zoom._value > this.state.minZoom
+                ? touchZoom * this.state.zoom._value : this.state.minZoom;
+            console.log(touchZoom);
+            Animated.spring(this.state.zoom, {
+                toValue: zoom
+            }).start(() => this.setState({
+                isZooming: false,
+                offsetX: this.state.offsetX * zoom,
+            }));
         }
     }
 
@@ -244,17 +269,12 @@ export default class ZoomableImage extends Component {
             dx: this.state.position.x,
             dy: this.state.position.y
         }])(e, gestureState);
-
-        this.setState({
-            offsetX: this.state.offsetX + gestureState.dx,
-        });
     }
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.2)',
         justifyContent: 'center',
         alignItems: 'center',
     },
