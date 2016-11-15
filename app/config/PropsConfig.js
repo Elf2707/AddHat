@@ -6,6 +6,7 @@ const PropsConfig = {
     hatIconRatio: 1.8,
     photosPerPage: 32,
     doubleClickThreshold: 200,
+    maxZoomAddCoef: 2,
 };
 
 export default PropsConfig;

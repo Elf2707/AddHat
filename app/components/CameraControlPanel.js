@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0,
         left: 0,
-        width: DimensionUtils.getWidthDimInPerc(95),
+        width: DimensionUtils.getWidthDimInPerc(90),
         borderRadius: DimensionUtils.getHeightDimInPerc(2),
         padding: 2,
         flexDirection: 'row',

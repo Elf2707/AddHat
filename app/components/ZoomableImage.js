@@ -13,35 +13,6 @@ const calcDistance = (x1, y1, x2, y2) => {
     return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 };
 
-const calcCenter = (x1, y1, x2, y2) => {
-
-    function middle(p1, p2) {
-        return p1 > p2 ? p1 - (p1 - p2) / 2 : p2 - (p2 - p1) / 2;
-    }
-
-    return {
-        x: middle(x1, x2),
-        y: middle(y1, y2),
-    };
-};
-
-const maxOffset = (offset, windowDimension, imageDimension) => {
-    let max = windowDimension - imageDimension;
-    if (max >= 0) {
-        return 0;
-    }
-    return offset < max ? max : offset;
-};
-
-const calcOffsetByZoom = (width, height, imageWidth, imageHeight, zoom) => {
-    let xDiff = imageWidth * zoom - width;
-    let yDiff = imageHeight * zoom - height;
-    return {
-        left: -xDiff / 2,
-        top: -yDiff / 2,
-    }
-};
-
 export default class ZoomableImage extends Component {
     static propTypes = {
         image: React.PropTypes.shape({
@@ -64,6 +35,9 @@ export default class ZoomableImage extends Component {
             isMoving: false,
             initialDistance: 0,
             offsetX: 0,
+            minOffsetX: 0,
+            offsetY: 0,
+            minOffsetY: 0,
             position: new Animated.ValueXY(),
             minZoom: 0,
             maxZoom: 1,
@@ -78,8 +52,6 @@ export default class ZoomableImage extends Component {
                 <Animated.Image
                     source={{uri: this.props.image.uri}}
                     style={[{
-                        borderColor: 'red',
-                        borderWidth: 2,
                         height: this.props.image.height,
                         width: this.props.image.width,
                         transform: this.state.position.getTranslateTransform().concat({
@@ -113,8 +85,6 @@ export default class ZoomableImage extends Component {
     _handlePanResponderGrant(e, gestureState) {
         const currX = this.state.position.x._value;
         const currY = this.state.position.y._value;
-        console.log('offsetX: ' + currX);
-        console.log('offsetY: ' + currY);
 
         this.state.position.setOffset({x: currX, y: currY});
         this.state.position.setValue({x: 0, y: 0});
@@ -148,14 +118,14 @@ export default class ZoomableImage extends Component {
             this.state.zoom.setValue(zoom);
 
             const offsetX = (this.state.screenWidth - this.props.image.width * zoom) / 2;
-
-            // Detect max zoom if picture less when screen zoom > 1 set maxZoom = zoom * 2
-            let maxZoom = zoom < 1 ? 1 : zoom + 2;
+            const offsetY = (this.state.screenHeight - this.props.image.height * zoom) / 2;
 
             this.setState({
-                maxZoom,
                 minZoom: zoom,
+                maxZoom: zoom + PropsConfig.maxZoomAddCoef,
                 offsetX,
+                offsetY,
+                minOffsetX: offsetX,
                 isLayoutInit: true,
             });
         }
@@ -165,52 +135,48 @@ export default class ZoomableImage extends Component {
         // Test if it goes out the boards return it back
         const currX = this.state.position.x._value;
         const currY = this.state.position.y._value;
-        console.log('x: ' + currX);
-        console.log('y: ' + currY);
-        console.log('offset: ' + this.state.offsetX);
 
         // 4 edges 4 directions
-        //if (currX > Math.abs(this.state.offsetX) && currY > 0) {
-        //    Animated.spring(this.state.position, {
-        //        toValue: {x: -this.state.offsetX, y: 0}
-        //    }).start();
-        //
-        //} else if (currX > Math.abs(this.state.offsetX) && currY < 0) {
-        //    Animated.spring(this.state.position, {
-        //        toValue: {x: -this.state.offsetX, y: 0}
-        //    }).start();
-        //
-        //} else if (currX < this.state.offsetX && currY < 0) {
-        //    Animated.spring(this.state.position, {
-        //        toValue: {x: this.state.offsetX, y: 0}
-        //    }).start();
-        //
-        //} else if (currX < this.state.offsetX && currY > 0) {
-        //    Animated.spring(this.state.position, {
-        //        toValue: {x: this.state.offsetX, y: 0}
-        //    }).start();
-        //
-        //} else if (currY > 0) {
-        //    Animated.spring(this.state.position, {
-        //        toValue: {x: currX, y: 0}
-        //    }).start();
-        //
-        //} else if (currX > Math.abs(this.state.offsetX)) {
-        //    Animated.spring(this.state.position, {
-        //        toValue: {x: -this.state.offsetX, y: currY}
-        //    }).start();
-        //
-        //} else if (currY < 0) {
-        //    Animated.spring(this.state.position, {
-        //        toValue: {x: currX, y: 0}
-        //    }).start();
-        //
-        //} else if (currX < this.state.offsetX) {
-        //    Animated.spring(this.state.position, {
-        //        toValue: {x: this.state.offsetX, y: currY}
-        //    }).start();
-        //}
+        if (currX > Math.abs(this.state.offsetX) && currY > Math.abs(this.state.offsetY)) {
+            Animated.spring(this.state.position, {
+                toValue: {x: -this.state.offsetX, y: -this.state.offsetY}
+            }).start();
 
+        } else if (currX > Math.abs(this.state.offsetX) && currY < this.state.offsetY) {
+            Animated.spring(this.state.position, {
+                toValue: {x: -this.state.offsetX, y: this.state.offsetY}
+            }).start();
+
+        } else if (currX < this.state.offsetX && currY < this.state.offsetY) {
+            Animated.spring(this.state.position, {
+                toValue: {x: this.state.offsetX, y: this.state.offsetY}
+            }).start();
+
+        } else if (currX < this.state.offsetX && currY > Math.abs(this.state.offsetY)) {
+            Animated.spring(this.state.position, {
+                toValue: {x: this.state.offsetX, y: Math.abs(this.state.offsetY)}
+            }).start();
+
+        } else if (currY > Math.abs(this.state.offsetY)) {
+            Animated.spring(this.state.position, {
+                toValue: {x: currX, y: Math.abs(this.state.offsetY)}
+            }).start();
+
+        } else if (currX > Math.abs(this.state.offsetX)) {
+            Animated.spring(this.state.position, {
+                toValue: {x: -this.state.offsetX, y: currY}
+            }).start();
+
+        } else if (currY < this.state.offsetY) {
+            Animated.spring(this.state.position, {
+                toValue: {x: currX, y: this.state.offsetY}
+            }).start();
+
+        } else if (currX < this.state.offsetX) {
+            Animated.spring(this.state.position, {
+                toValue: {x: this.state.offsetX, y: currY}
+            }).start();
+        }
     }
 
     detectTaps({dx, dy}) {
@@ -247,15 +213,24 @@ export default class ZoomableImage extends Component {
 
         } else {
             let touchZoom = distance / this.state.initialDistance;
+
             let zoom = touchZoom * this.state.zoom._value > this.state.minZoom
                 ? touchZoom * this.state.zoom._value : this.state.minZoom;
-            console.log(touchZoom);
+            zoom = zoom < this.state.maxZoom ? zoom : this.state.maxZoom;
+
+            // Calc new offset
+            let offsetX = (this.state.screenWidth - this.props.image.width * zoom) / 2;
+            let offsetY = (this.state.screenHeight - this.props.image.height * zoom) / 2;
+
             Animated.spring(this.state.zoom, {
                 toValue: zoom
-            }).start(() => this.setState({
+            }).start();
+
+            this.setState({
                 isZooming: false,
-                offsetX: this.state.offsetX * zoom,
-            }));
+                offsetX,
+                offsetY,
+            });
         }
     }
 
