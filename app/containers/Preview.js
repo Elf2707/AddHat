@@ -5,22 +5,26 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import ZoomableImage from './../components/ZoomableImage';
+import PhotoView from '../components/PhotoView';
 
 class Preview extends Component {
     render() {
         return (
-            <ZoomableImage
+            <PhotoView
                 isPhotoProcessing={this.props.isPhotoProcessing}
-                image={this.props.photo}/>
+                image={this.props.photoFileName}
+                error={this.props.error}
+            />
         );
     }
 }
 
 const mapStateToProps = (state) => {
+    const { isPhotoProcessing, error, photoFileName } = state.faceDetector;
     return ({
-        isPhotoProcessing: state.faceDetector.isPhotoProcessing,
-        photoWithHatsFileName: state.faceDetector.photoWithHatsFileName,
+        isPhotoProcessing,
+        error,
+        photoFileName,
     });
 };
 

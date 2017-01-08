@@ -11,21 +11,27 @@ import CameraView from '../components/CameraView';
 import * as FaceDetectionActions from './../actions/FaceDetectionActions';
 
 class Camera extends Component {
+    constructor(props) {
+        super(props);
+
+        this.handleSnapShot = this.handleSnapShot.bind(this);
+    }
+
     render() {
         return (
             <CameraView
-                onTakeSnapShot={this._handleSnapShot.bind(this)}/>
+                onTakeSnapShot={this.handleSnapShot}/>
         );
     }
 
-    _handleSnapShot(path) {
+    handleSnapShot(path) {
         // Detect faces on last snapshot and go to preview page
-        if(this.props.isPhotoProcessing) {
+        if(this.props.isPhotoProcessing || path === '') {
             return;
         }
 
         this.props.addHatsToFaces(path);
-        Actions.preview();
+        Actions.photoPreview();
     }
 }
 

@@ -79,7 +79,6 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
         	String msg = mContext.getResources().getString(R.string.faces_detection_error);
             Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
             Log.w(TAG, msg);
-
 		} finally {
 			// Release face detector
             if( detector != null){
@@ -137,7 +136,7 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
         saveResultFile(promise);
     }
 
-    private void addHat() {
+    private void drawHats() {
         if(mFaces == null || mFaces.size() == 0){
             String msg = mContext.getResources().getString(R.string.no_faces);
             Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
@@ -199,25 +198,32 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
     }
 
 	@ReactMethod
-	public void detectFacesAddHatsSaveToFile(String picFileName, Promise promise) {
+	public void addHats(String picFileName, Promise promise) {
 		detectFaces(picFileName);
-		addHat();
+		drawHats();
 
 		// Clear face array
 		mFaces = null;
-
 		saveResultFile(promise);
-
 	}
 
     private String getRealPathFromURI(Uri contentUri) {
     	Cursor cursor = null;
 
       	try {
+		Log.w(TAG, "sssssssssssssssssssssssssssssssssssssss1");
+
         	String[] mediaData = { Media.DATA };
+		Log.w(TAG, "sssssssssssssssssssssssssssssssssssssss2");
+
         	cursor = mContext.getContentResolver().query(contentUri,  mediaData, null, null, null);
+		Log.w(TAG, "sssssssssssssssssssssssssssssssssssssss3" + cursor.getColumnCount());
+
         	int column_index = cursor.getColumnIndexOrThrow(Media.DATA);
+		Log.w(TAG, "sssssssssssssssssssssssssssssssssssssss4");
+
         	cursor.moveToFirst();
+		Log.w(TAG, "sssssssssssssssssssssssssssssssssssssss5");
 
         	return cursor.getString(column_index);
       	} finally {
@@ -241,17 +247,14 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
                 OutputStream outputStream = mContext.getContentResolver()
                                 .openOutputStream(Uri.parse(mSourceFileName));
                 mSourceImage.compress(CompressFormat.JPEG, 100, outputStream);
-
                 outputStream.flush();
                 outputStream.close();
 
                 String realImagePath = getRealPathFromURI(Uri.parse(mSourceFileName));
                 mmPromise.resolve((realImagePath != null)? realImagePath: mSourceFileName);
-
             } catch (Exception e) {
                 Log.e("MyLog", e.toString());
                 mmPromise.reject("Error");
-
             } finally {
             	// Delete image file buffers
                 mSourceImage = null;

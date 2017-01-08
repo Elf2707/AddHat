@@ -42,7 +42,7 @@ export default class CameraView extends Component {
         // Take snapshot
         this.camera.capture()
             .then((data) => {
-                this.props.onTakeSnapShot(data.path)
+                this.props.onTakeSnapShot(data.path);
             })
             .catch(err => console.error(err));
     }

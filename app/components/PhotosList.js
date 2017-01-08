@@ -38,7 +38,7 @@ export default class PhotosList extends Component {
     }
 
     handlePhotoClick(photo) {
-        Actions.photo({photo});
+        Actions.photoPreview({photo});
     }
 
     render() {
