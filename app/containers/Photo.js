@@ -7,12 +7,12 @@ import { connect } from 'react-redux';
 
 import PhotoView from '../components/PhotoView';
 
-class Preview extends Component {
+class Photo extends Component {
     render() {
         return (
             <PhotoView
                 isPhotoProcessing={this.props.isPhotoProcessing}
-                image={this.props.photoFileName}
+                photo={this.props.photo}
                 error={this.props.error}
             />
         );
@@ -20,12 +20,12 @@ class Preview extends Component {
 }
 
 const mapStateToProps = (state) => {
-    const { isPhotoProcessing, error, photoFileName } = state.faceDetector;
+    const { isPhotoProcessing, error, photo } = state.faceDetector;
     return ({
-        isPhotoProcessing,
         error,
-        photoFileName,
+        isPhotoProcessing,
+        photo,
     });
 };
 
-export default connect(mapStateToProps)(Preview);
+export default connect(mapStateToProps)(Photo);

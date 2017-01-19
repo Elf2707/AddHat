@@ -14,40 +14,40 @@ export function addHatsToFaces(path) {
       type: ActionTypes.START_ADDING_HATS,
       payload: null,
     });
-    Actions.photoPreview({ type: ActionConst.POP_AND_REPLACE });
+
+    Actions.photoPreview();
 
     try {
-      console.log('dddddddddd');
-
       // Detect faces
       const result = await FaceDetector.addHats(path);
 
       if (result === 'Error') {
-        console.log('dddddddddd111');
-
         throw new Error('Error detection Faces!');
       }
-      console.log(result);
 
       // Get image size
-      Image.getSize(result, (data) => {
-        console.log('ssssssssssssssssssssssssssssssssss');
-        console.log(data);
+      Image.getSize(result, (width, height) => {
         dispatch({
           type: ActionTypes.ADDING_HATS_SUCCESS,
-          payload: result,
+          payload: {
+            height,
+            width,
+            path,
+          },
         });
-      }, err => console.log(err));
+      }, (err) => {
+        console.log(err);
+        dispatch({
+          type: ActionTypes.ADDING_HATS_ERROR,
+          payload: null,
+        });
+      });
     } catch (e) {
       console.log(e.message);
-
       dispatch({
         type: ActionTypes.ADDING_HATS_ERROR,
         payload: null,
       });
-      Actions.camera();
-      return;
     }
-
   }
 }

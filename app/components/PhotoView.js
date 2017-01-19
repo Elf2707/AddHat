@@ -2,7 +2,8 @@
  * Created by Elf on 08.07.2016.
  */
 import React, { Component } from 'react';
-import { View, ActivityIndicator, Text, StyleSheet, Image } from 'react-native';
+import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { Actions } from 'react-native-router-flux';
 
 import ZoomableImage from './ZoomableImage'
 
@@ -10,19 +11,10 @@ export default class PhotoView extends Component {
   static propTypes = {
     isPhotoProcessing: React.PropTypes.bool.isRequired,
     error: React.PropTypes.bool.isRequired,
-    photoFileName: React.PropTypes.string,
+    photo: React.PropTypes.object,
   };
 
-  constructor(props) {
-    super(props);
-  }
-
   renderContent() {
-    //return (
-      //<ZoomableImage
-        //image={this.props.photoFileName}/>
-    //);
-
     if (this.props.error) {
       return (
         <Text style={styles.errorText}>
@@ -40,13 +32,10 @@ export default class PhotoView extends Component {
       );
     }
 
-    return (
-      <Image style={{width: 400, height: 400}} source={{uri:this.props.image}}/>
-    );
+    return <ZoomableImage image={this.props.photo} />;
   }
 
   render() {
-    console.log(this.props.photo);
     return (
       <View style={styles.container}>
         {this.renderContent()}

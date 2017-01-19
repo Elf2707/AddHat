@@ -10,7 +10,6 @@ import * as PhotosListActions from './../actions/PhotosListActions';
 
 class Gallery extends Component {
     render(){
-        console.log(this.props.photos);
         return (
             <GalleryView photos={this.props.photos}
                          onEndPhotosReached={this._handleOnPhotosEndReached.bind(this)}/>

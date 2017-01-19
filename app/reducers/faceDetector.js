@@ -5,7 +5,7 @@ import * as ActionTypes from '../constants/FaceDetectionActionTypes';
 
 const initialState = {
     isPhotoProcessing: false,
-    photoWithHatsFileName: '',
+    photo: null,
     error: false,
 };
 
@@ -26,7 +26,7 @@ export default function faceDetector(state = initialState, action = {}) {
         case ActionTypes.ADDING_HATS_SUCCESS:
             return Object.assign({}, state, {
                 isPhotoProcessing: false,
-                photoWithHatsFileName: action.payload,
+                photo: action.payload,
                 error: false,
             });
 

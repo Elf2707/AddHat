@@ -92,11 +92,11 @@ const styles = StyleSheet.create({
     },
 
     leftMarginMinus: {
-        marginLeft: -DimensionUtils.getHeightDimInPerc(2.1)
+        marginLeft: -DimensionUtils.getHeightDimInPerc(1)
     },
 
     rightMarginMinus: {
-        marginRight: -DimensionUtils.getHeightDimInPerc(2.2)
+        marginRight: -DimensionUtils.getHeightDimInPerc(1)
     },
 
     text3per: {

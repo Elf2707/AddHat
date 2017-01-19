@@ -2,7 +2,17 @@
  * Created by Elf on 27.08.2016.
  */
 import React, { Component } from 'react';
-import { View, Animated, StyleSheet, PanResponder, Image, Platform } from 'react-native';
+import {
+  View,
+  Animated,
+  StyleSheet,
+  PanResponder,
+  Image,
+  Platform,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
+import { Actions } from 'react-native-router-flux';
 
 import DimensionUtils from './../utils/dimensionUtils';
 import PropsConfig from './../config/PropsConfig';
@@ -18,7 +28,7 @@ export default class ZoomableImage extends Component {
         image: React.PropTypes.shape({
             height: React.PropTypes.number.isRequired,
             width: React.PropTypes.number.isRequired,
-            uri: React.PropTypes.string.isRequired,
+            path: React.PropTypes.string.isRequired,
         }).isRequired,
     };
 
@@ -49,8 +59,14 @@ export default class ZoomableImage extends Component {
         return (
             <View style={[styles.container, this.props.style]}
                   onLayout={this._onLayout}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={Actions.pop}
+                >
+                    <Text style={{color: '#FFF'}}>Close</Text>
+                </TouchableOpacity>
                 <Animated.Image
-                    source={{uri: this.props.image.uri}}
+                    source={{uri: this.props.image.path}}
                     style={[{
                         height: this.props.image.height,
                         width: this.props.image.width,
@@ -113,12 +129,16 @@ export default class ZoomableImage extends Component {
 
     _onLayout() {
         if (!this.state.isLayoutInit) {
+            const { screenWidth, screenHeight } = this.state;
+            const { image } = this.props;
+
             // Calc zoom for height match to screen height
-            let zoom = this.state.screenHeight / this.props.image.height;
+            let zoom = screenHeight / image.height;
+
             this.state.zoom.setValue(zoom);
 
-            const offsetX = (this.state.screenWidth - this.props.image.width * zoom) / 2;
-            const offsetY = (this.state.screenHeight - this.props.image.height * zoom) / 2;
+            const offsetX = (screenWidth - image.width * zoom) / 2;
+            const offsetY = (screenHeight - image.height * zoom) / 2;
 
             this.setState({
                 minZoom: zoom,
@@ -250,7 +270,14 @@ export default class ZoomableImage extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        width: DimensionUtils.getWidthDimInPerc(100),
+        height: DimensionUtils.getHeightDimInPerc(100),
         justifyContent: 'center',
         alignItems: 'center',
     },
+
+    closeButton: {
+        position: 'absolute',
+        zIndex: 100,
+    }
 });

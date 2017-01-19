@@ -209,23 +209,18 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
 
     private String getRealPathFromURI(Uri contentUri) {
     	Cursor cursor = null;
+    	try {
+			String realPath = "";
+        	String[] filePathColumn = { Media.DISPLAY_NAME };
 
-      	try {
-		Log.w(TAG, "sssssssssssssssssssssssssssssssssssssss1");
+        	cursor = mContext.getContentResolver().query(contentUri,  filePathColumn, null, null, null);
 
-        	String[] mediaData = { Media.DATA };
-		Log.w(TAG, "sssssssssssssssssssssssssssssssssssssss2");
+			if	(cursor.moveToFirst()) {
+        		int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        		realPath = cursor.getString(columnIndex);
+    		}
 
-        	cursor = mContext.getContentResolver().query(contentUri,  mediaData, null, null, null);
-		Log.w(TAG, "sssssssssssssssssssssssssssssssssssssss3" + cursor.getColumnCount());
-
-        	int column_index = cursor.getColumnIndexOrThrow(Media.DATA);
-		Log.w(TAG, "sssssssssssssssssssssssssssssssssssssss4");
-
-        	cursor.moveToFirst();
-		Log.w(TAG, "sssssssssssssssssssssssssssssssssssssss5");
-
-        	return cursor.getString(column_index);
+        	return realPath;
       	} finally {
         	if (cursor != null) {
           		cursor.close();
@@ -250,8 +245,7 @@ public class RnFaceDetector extends ReactContextBaseJavaModule {
                 outputStream.flush();
                 outputStream.close();
 
-                String realImagePath = getRealPathFromURI(Uri.parse(mSourceFileName));
-                mmPromise.resolve((realImagePath != null)? realImagePath: mSourceFileName);
+                mmPromise.resolve(mSourceFileName);
             } catch (Exception e) {
                 Log.e("MyLog", e.toString());
                 mmPromise.reject("Error");
